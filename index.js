@@ -22,9 +22,9 @@ mongoose
   });
 
 app.use(cors(
-//   {
-//   origin: ["https://taacland-client.web.app/"]
-// }
+  {
+  origin: ["https://taacland-client.web.app/"]
+}
 ));
 app.use(express.json());
 app.use("/api/auth", authRoute);
