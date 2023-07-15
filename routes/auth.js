@@ -3,6 +3,24 @@ const User = require("../models/User");
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
 
+// const {v4: uuidv4} = require("uuid");
+const nodemailer = require("nodemailer");
+let transporter = nodemailer.createTransport({
+  service:"gmail",
+  auth:{
+    user: process.env.AUTH_EMAIL,
+    pass: process.env.AUTH_PASS,
+  }
+})
+
+transporter.verify((error , success)=>{
+  if(error){
+    console.log(error);
+  }else{
+    console.log(success);
+  }
+})
+
 //REGISTER
 router.post("/register", async (req, res) => {
   const newUser = new User({
@@ -12,9 +30,11 @@ router.post("/register", async (req, res) => {
       req.body.password,
       process.env.PASS_SEC
     ).toString(),
+    vreified: false,
   });
 
   try {
+    // sandVerificationEmail
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
   } catch (err) {

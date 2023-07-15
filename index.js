@@ -14,6 +14,14 @@ const sliderRoute = require("./routes/slider");
 // const functions = require("firebase-functions");
 const cors = require("cors");
 
+
+
+// const bodyParser = require("express").json;
+// app.use(bodyParser())
+
+
+
+
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("DB Connection Successfull!"))

@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const UserVerification = require("../models/UserVerification");
 const {
   verifyToken,
   verifyTokenAndAuthorization,
@@ -6,6 +7,9 @@ const {
 } = require("./verifyToken");
 
 const router = require("express").Router();
+
+
+
 
 //UPDATE
 router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
