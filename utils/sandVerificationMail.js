@@ -6,7 +6,7 @@ const sandVerificationMail = (user) => {
     to: user.email,
     subject: "verify your email...",
     html: `<p>hello ${user.username}, verify your email clicking this link ...</p>
-        <a href='${process.env.CLIENT_URL}/verifyemail?emailToken=${user.emailToken}'>Verify Your Email</a>`,
+        <a href='${process.env.CLIENTURL}/verifyemail?emailToken=${user.emailToken}'>Verify Your Email</a>`,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
