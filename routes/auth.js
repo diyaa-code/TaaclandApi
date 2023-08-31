@@ -1,25 +1,16 @@
 const router = require("express").Router();
 const User = require("../models/User");
+
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { sandVerificationMail } = require("../utils/sandVerificationMail");
 
-// const {v4: uuidv4} = require("uuid");
-const nodemailer = require("nodemailer");
-let transporter = nodemailer.createTransport({
-  service:"gmail",
-  auth:{
-    user: process.env.AUTH_EMAIL,
-    pass: process.env.AUTH_PASS,
-  }
-})
+const createToken = (_id) => {
+  const jwtSecretKey = process.env.JWT_SEC;
 
-transporter.verify((error , success)=>{
-  if(error){
-    console.log(error);
-  }else{
-    console.log(success);
-  }
-})
+  return jwt.sign({ _id }, jwtSecretKey, { expiresIn: "3d" });
+};
 
 //REGISTER
 router.post("/register", async (req, res) => {
@@ -30,12 +21,12 @@ router.post("/register", async (req, res) => {
       req.body.password,
       process.env.PASS_SEC
     ).toString(),
-    vreified: false,
+    emailToken: crypto.randomBytes(64).toString("hex"),
   });
 
   try {
-    // sandVerificationEmail
     const savedUser = await newUser.save();
+    sandVerificationMail(savedUser);
     res.status(201).json(savedUser);
   } catch (err) {
     res.status(500).json(err);
@@ -44,7 +35,6 @@ router.post("/register", async (req, res) => {
 });
 
 //LOGIN
-
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -73,6 +63,48 @@ router.post("/login", async (req, res) => {
     res.status(200).json({ ...others, accessToken });
   } catch (err) {
     //res.status(500).json(err);
+    console.log(err);
+  }
+});
+// verifyEmail
+
+router.post("/verifyemail", async (req, res) => {
+  try {
+    const emailToken = req.body.emailToken;
+    if (!emailToken) return res.status.json("Email not found...");
+
+    const user = await User.findOne({ emailToken });
+    if (user) {
+      user.emailToken = null;
+      user.isVerified = true;
+
+      await user.save();
+      // const token = createToken(user._id);
+
+      res.status(200).json({
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        // token,
+        isVerified: user?.isVerified,
+      });
+    } else {
+      res.status(404).json("email verification failed, invalid toklen!");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+//Resend verifyEmail
+
+router.post("/resendverifyemail/:id", async (req, res) => {
+  try {
+    const newUser = await User.findById(req.params.id);
+    sandVerificationMail(newUser);
+    res.status(201).json(newUser);
+  } catch (err) {
+    res.status(500).json(err);
     console.log(err);
   }
 });

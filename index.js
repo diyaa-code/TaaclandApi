@@ -11,17 +11,12 @@ const orderRoute = require("./routes/order");
 const stripeRoute = require("./routes/stripe");
 const categoryRoute = require("./routes/category");
 const sliderRoute = require("./routes/slider");
+const aboutUsRoute = require("./routes/aboutUs");
 // const functions = require("firebase-functions");
 const cors = require("cors");
 
-
-
 // const bodyParser = require("express").json;
 // app.use(bodyParser())
-
-
-
-
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -30,9 +25,10 @@ mongoose
     console.log(err);
   });
 
-app.use(cors(
+app.use(
+  cors()
   // {origin: ["https://taacland-client.web.app/"]}
-));
+);
 app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
@@ -42,10 +38,10 @@ app.use("/api/orders", orderRoute);
 app.use("/api/checkout", stripeRoute);
 app.use("/api/categories", categoryRoute);
 app.use("/api/sliders", sliderRoute);
+app.use("/api/aboutUs", aboutUsRoute);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log("Backend server is running!");
 });
-
 
 // exports.api = functions.https.onRequest(app)

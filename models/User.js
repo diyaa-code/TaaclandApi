@@ -10,7 +10,8 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
     img: { type: String },
-    vreified: {type: Boolean},
+    isVerified: { type: Boolean, default: false },
+    emailToken: { type: String },
   },
   { timestamps: true }
 );
